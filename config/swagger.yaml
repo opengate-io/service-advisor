@@ -1,0 +1,233 @@
+swagger: '2.0'
+info:
+  version: 0.0.1
+  title: service-advisor
+host: 'localhost:10010'
+basePath: /
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /services:
+    x-swagger-router-controller: services
+    get:
+      description: >-
+        Returns 'Service' list that is capable to call from client according to
+        OpenAPI 3.0 or Swagger 2.0.
+      operationId: getServices
+      parameters:
+        - name: name
+          in: query
+          description: The name of the service specs to look up.
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ServicesResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    post:
+      description: Create 'Service' specs into the system.
+      operationId: createService
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ServiceRequest'
+      responses:
+        '201':
+          description: Created
+          schema:
+            $ref: '#/definitions/ServiceResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/service/{id}':
+    x-swagger-router-controller: services
+    get:
+      description: Returns 'Service' specs from the system.
+      operationId: getServiceById
+      parameters:
+        - name: id
+          in: path
+          description: The id of the service to be affected.
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ServicesResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    put:
+      description: Update 'Service' specs into the system.
+      operationId: updateService
+      parameters:
+        - name: id
+          in: path
+          description: The id of the service to be affected.
+          required: true
+          type: integer
+        - name: body
+          in: body
+          description: The full specs of the service to update.
+          required: true
+          schema:
+            $ref: '#/definitions/ServiceRequest'
+      responses:
+        '200':
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    delete:
+      description: Remove 'Service' specs out of the system.
+      operationId: deleteService
+      parameters:
+        - name: id
+          in: path
+          description: The id of the service to be affected.
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ServiceResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/service/{id}/start':
+    put:
+      description: Start training 'Service' specs in the system.
+      operationId: startTrainingService
+      parameters:
+        - name: id
+          in: path
+          description: The id of the service to be affected.
+          required: true
+          type: integer
+      responses:
+        '201':
+          description: Created
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/service/{id}/stop':
+    put:
+      description: Stop training 'Service' specs in the system.
+      operationId: stopTrainingService
+      parameters:
+        - name: id
+          in: path
+          description: The id of the service to be affected.
+          required: true
+          type: integer
+      responses:
+        '201':
+          description: Created
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /catalogs:
+    get:
+      description: Get 'Service' specs calalogs in the system.
+      operationId: getServiceCatalogs
+      responses:
+        '200':
+          description: Success
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/CatalogsResponse'
+  /swagger:
+    x-swagger-pipe: swagger_raw
+definitions:
+  ServiceRequest:
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      method:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+  ServiceResponse:
+    required:
+      - id
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      version:
+        type: string
+      specs:
+        type: string
+      probability:
+        type: number
+        format: float32
+  ServicesResponse:
+    required:
+      - items
+    properties:
+      total:
+        type: integer
+      start:
+        type: integer
+      size:
+        type: integer
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/ServiceResponse'
+  CatalogResponse:
+    required:
+      - id
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      version:
+        type: string
+  CatalogsResponse:
+    required:
+      - items
+    properties:
+      total:
+        type: integer
+      start:
+        type: integer
+      size:
+        type: integer
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/CatalogResponse'
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
